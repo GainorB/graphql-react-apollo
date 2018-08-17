@@ -1,9 +1,8 @@
 const graphql = require('graphql');
-const _ = require('lodash');
 const Book = require('../models/Book');
 const Author = require('../models/Author');
 
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLInt, GraphQLList } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
 
 // describes the BookType
 const BookType = new GraphQLObjectType({
@@ -18,7 +17,7 @@ const BookType = new GraphQLObjectType({
     author: {
       type: AuthorType,
       // parent object contains the data that was passed through from the parent query (Book)
-      resolve(parent, args) {
+      resolve(parent) {
         const { authorId } = parent;
         // return _.find(authors, { id: authorID });
         return Author.findById(authorId);
@@ -110,8 +109,8 @@ const Mutation = new GraphQLObjectType({
       type: AuthorType,
       // expect the client to send data
       args: {
-        name: { type: GraphQLString },
-        age: { type: GraphQLInt },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
       },
       resolve(parent, { name, age }) {
         const author = new Author({ name, age });
@@ -121,9 +120,9 @@ const Mutation = new GraphQLObjectType({
     addBook: {
       type: BookType,
       args: {
-        name: { type: GraphQLString },
-        genre: { type: GraphQLString },
-        authorId: { type: GraphQLID },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, { name, genre, authorId }) {
         const book = new Book({ name, genre, authorId });
