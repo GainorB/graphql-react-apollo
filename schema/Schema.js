@@ -5,9 +5,12 @@ const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLInt }
 
 // FAKE DB
 const books = [
-  { name: 'Name of the Wind', genre: 'Fantasy', id: '1' },
-  { name: 'Harry Potter', genre: 'Fantasy', id: '2' },
-  { name: 'JS for Dummies', genre: 'Educational', id: '3' },
+  { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorID: '1' },
+  { name: 'Harry Potter', genre: 'Fantasy', id: '2', authorID: '2' },
+  { name: 'JS for Dummies', genre: 'Educational', id: '3', authorID: '3' },
+  { name: 'TS for Dummies', genre: 'Educational', id: '4', authorID: '1' },
+  { name: 'Calculus', genre: 'Educational', id: '5', authorID: '2' },
+  { name: 'NY Times', genre: 'News', id: '6', authorID: '3' },
 ];
 
 const authors = [
@@ -25,6 +28,15 @@ const BookType = new GraphQLObjectType({
     id: { type: GraphQLID }, // GraphQLID allows you to query by ID as an integer or string => but args.id is still a string type
     name: { type: GraphQLString },
     genre: { type: GraphQLString },
+    // nesting
+    author: {
+      type: AuthorType,
+      // parent object contains the data that was passed through from the parent (Book)
+      resolve(parent, args) {
+        const { authorID } = parent;
+        return _.find(authors, { id: authorID });
+      },
+    },
   }),
 });
 
@@ -32,9 +44,9 @@ const BookType = new GraphQLObjectType({
 const AuthorType = new GraphQLObjectType({
   name: 'Author', // mandatory
   fields: () => ({
-    id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    age: { type: GraphQLInt },
+    id: { type: GraphQLID, description: 'ID of Author' },
+    name: { type: GraphQLString, description: 'Name of Author' },
+    age: { type: GraphQLInt, description: 'Age of Author' },
   }),
 });
 
@@ -59,6 +71,16 @@ const RootQuery = new GraphQLObjectType({
         const { id } = args;
         // use lodash to look through books array to find a book by its id
         return _.find(books, { id });
+      },
+    },
+    // author query
+    author: {
+      type: AuthorType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve(parent, { id }) {
+        return _.find(authors, { id });
       },
     },
   },
