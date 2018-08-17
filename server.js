@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const mongoose = require('mongoose');
-const RootQuery = require('./schema/Schema');
+const Schema = require('./schema/Schema');
 
 const port = process.env.PORT || 4000;
 const app = express();
@@ -19,7 +19,7 @@ mongoose.connection.once('open', () => {
 app.use(
   '/graphql',
   graphqlHTTP({
-    schema: RootQuery, // describes how our graph looks
+    schema: Schema, // describes how our graph looks
     graphiql: true,
     pretty: true,
   })
