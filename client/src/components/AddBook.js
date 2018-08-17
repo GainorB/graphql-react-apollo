@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { graphql } from 'react-apollo';
-import { getAuthorsQuery } from '../queries';
+import { graphql, compose } from 'react-apollo';
+import { getAuthorsQuery, getBooksQuery, addBookMutation } from '../queries';
 
 class AddBook extends Component {
   static propTypes = {
-    data: PropTypes.object.isRequired,
+    getAuthorsQueryDATA: PropTypes.object.isRequired,
+    addBookMutation: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -27,17 +28,17 @@ class AddBook extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const data = this.state;
-    console.log(data);
+    const { name, genre, authorId } = this.state;
+    this.props.addBookMutation({ variables: { name, genre, authorId }, refetchQueries: [{ query: getBooksQuery }] });
   };
 
   renderAuthors = () => {
-    const { data } = this.props;
-    if (data.loading) {
+    const { getAuthorsQueryDATA } = this.props;
+    if (getAuthorsQueryDATA.loading) {
       return <option>Loading Authors</option>;
     }
 
-    return data.authors.map(author => (
+    return getAuthorsQueryDATA.authors.map(author => (
       <option key={author.id} value={author.id}>
         {author.name}
       </option>
@@ -69,4 +70,7 @@ class AddBook extends Component {
   }
 }
 
-export default graphql(getAuthorsQuery)(AddBook);
+export default compose(
+  graphql(getAuthorsQuery, { name: 'getAuthorsQueryDATA' }),
+  graphql(addBookMutation, { name: 'addBookMutation' })
+)(AddBook);
