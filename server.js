@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const Schema = require('./schema/Schema');
 
 const port = process.env.PORT || 4000;
@@ -15,7 +16,8 @@ mongoose.connect(
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
 });
-
+// allow cross origin requests
+app.use(cors());
 app.use(
   '/graphql',
   graphqlHTTP({

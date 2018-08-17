@@ -61,7 +61,7 @@ const Mutation = new GraphQLObjectType({
 });
 ```
 
-## Export the Schema
+## EXPORT THE SCHEMA
 ```javascript
 module.exports = new GraphQLSchema({
   query: Query,
@@ -74,3 +74,20 @@ module.exports = new GraphQLSchema({
     1. Allows express to understand GraphQL
 
 # Apollo
+
+1. GraphQL Client to make requests to the server. (similar to Axios)
+2. Manages the passage of data between client and server.
+
+## CREATE A CLIENT
+```javascript
+import ApolloClient from "apollo-boost";
+
+const client = new ApolloClient({
+  uri: "......."
+});
+```
+
+## MODULES
+1. apollo-boost: Package containing everything you need to set up Apollo Client
+2. react-apollo: View layer integration for React
+3. graphql: Also parses your GraphQL queries
