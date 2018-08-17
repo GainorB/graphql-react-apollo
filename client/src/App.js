@@ -5,13 +5,14 @@ import PropTypes from 'prop-types';
 import '../static/css/style.css';
 
 // COMPONENTS
-import Home from './components/Home';
 import BookList from './components/BookList';
+import AddBook from './components/AddBook';
 
 const App = () => (
   <div>
     <h1>Gainor's Reading List</h1>
     <BookList />
+    <AddBook />
   </div>
 );
 

@@ -87,6 +87,26 @@ const client = new ApolloClient({
 });
 ```
 
+## QUERY
+1. Structure the query the same way we did in GraphiQL and save to a variable
+```javascript
+const getBooksQuery = gql`
+  {
+    books {
+      name
+      id
+    }
+  }
+`;
+```
+
+## BIND QUERY WITH COMPONENT
+1. This makes the data received from the query available as props on this component.
+2. Bind the variable we created above to the component
+```javascript
+export default graphql(getBooksQuery)(BookList);
+```
+
 ## MODULES
 1. apollo-boost: Package containing everything you need to set up Apollo Client
 2. react-apollo: View layer integration for React
