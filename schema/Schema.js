@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const _ = require('lodash');
 
-const { GraphQLObjectType, GraphQLString, GraphQLSchema } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLInt } = graphql;
 
 // FAKE DB
 const books = [
@@ -10,15 +10,31 @@ const books = [
   { name: 'JS for Dummies', genre: 'Educational', id: '3' },
 ];
 
+const authors = [
+  { name: 'Gainor Bostwick', age: 28, id: '1' },
+  { name: 'Roger Bostwick', age: 22, id: '2' },
+  { name: 'Jr Bostwick', age: 24, id: '3' },
+];
+
 // describes the BookType
 const BookType = new GraphQLObjectType({
   name: 'Book',
   // fields are our properties
   // will help overcome reference errors when we have multiple types
   fields: () => ({
-    id: { type: GraphQLString },
+    id: { type: GraphQLID }, // GraphQLID allows you to query by ID as an integer or string => but args.id is still a string type
     name: { type: GraphQLString },
     genre: { type: GraphQLString },
+  }),
+});
+
+// describes the AuthorType
+const AuthorType = new GraphQLObjectType({
+  name: 'Author', // mandatory
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    age: { type: GraphQLInt },
   }),
 });
 
@@ -35,7 +51,7 @@ const RootQuery = new GraphQLObjectType({
       // define what arguments get passed along with query
       // book(id: "123") {}
       args: {
-        id: { type: GraphQLString },
+        id: { type: GraphQLID },
       },
       // database models
       resolve(parent, args) {
