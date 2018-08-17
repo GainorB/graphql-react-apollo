@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 // CSS
 import '../static/css/style.css';
@@ -9,7 +8,7 @@ import BookList from './components/BookList';
 import AddBook from './components/AddBook';
 
 const App = () => (
-  <div>
+  <div id="main">
     <h1>Gainor's Reading List</h1>
     <BookList />
     <AddBook />
