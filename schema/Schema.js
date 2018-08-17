@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 const _ = require('lodash');
 
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLInt } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLInt, GraphQLList } = graphql;
 
 // FAKE DB
 const books = [
@@ -31,7 +31,7 @@ const BookType = new GraphQLObjectType({
     // nesting
     author: {
       type: AuthorType,
-      // parent object contains the data that was passed through from the parent (Book)
+      // parent object contains the data that was passed through from the parent query (Book)
       resolve(parent, args) {
         const { authorID } = parent;
         return _.find(authors, { id: authorID });
@@ -43,10 +43,19 @@ const BookType = new GraphQLObjectType({
 // describes the AuthorType
 const AuthorType = new GraphQLObjectType({
   name: 'Author', // mandatory
+  // wrap field in function so the SchemaTypes don't get undefined when the code is compiled. When its wrapped in a function, the code isn't executed until that particular query is ran
   fields: () => ({
     id: { type: GraphQLID, description: 'ID of Author' },
     name: { type: GraphQLString, description: 'Name of Author' },
     age: { type: GraphQLInt, description: 'Age of Author' },
+    // authors may have more than one book
+    books: {
+      type: new GraphQLList(BookType),
+      resolve(parent, args) {
+        const { id } = parent;
+        return _.filter(books, { authorID: id });
+      },
+    },
   }),
 });
 
@@ -57,6 +66,7 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     // book is the name of the query we will use on client
     // book {}
+    // book by id
     book: {
       type: BookType,
       // when someone queries this BookType, we expect to pass arguments to find books
@@ -74,6 +84,7 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     // author query
+    // author by id
     author: {
       type: AuthorType,
       args: {
@@ -81,6 +92,20 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, { id }) {
         return _.find(authors, { id });
+      },
+    },
+    // because we setup relationship between book and author
+    // we can also use books to get authors
+    books: {
+      type: new GraphQLList(BookType),
+      resolve() {
+        return books;
+      },
+    },
+    authors: {
+      type: new GraphQLList(AuthorType),
+      resolve() {
+        return authors;
       },
     },
   },

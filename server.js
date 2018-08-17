@@ -1,9 +1,20 @@
+require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
+const mongoose = require('mongoose');
 const RootQuery = require('./schema/Schema');
 
 const port = process.env.PORT || 4000;
 const app = express();
+
+// connect to db
+mongoose.connect(
+  `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@ds123562.mlab.com:23562/gql-books-tutorial`,
+  { useNewUrlParser: true }
+);
+mongoose.connection.once('open', () => {
+  console.log('Connected to MongoDB');
+});
 
 app.use(
   '/graphql',
